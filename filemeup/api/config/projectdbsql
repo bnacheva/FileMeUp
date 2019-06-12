@@ -38,11 +38,28 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for table `files`
+--
+
+CREATE TABLE `files` (
+  `id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `file_name` varchar(2056) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `email`, `firstname`, `lastname`, `password`, `role`) VALUES
 (1, 'bori97@abv.bg', 'Боряна', 'Начева', '8d8d1603ae6d58faaaff0185dfada8b2', 'Admin');
+
+--
+-- Dumping data for table `files`
+--
+
+INSERT INTO `files` (`id`, `email`, `file_name`) VALUES
+(1, 'bori97@abv.bg', 'file.txt');
 
 --
 -- Indexes for dumped tables
@@ -56,6 +73,13 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexes for table `files`
+--
+
+ALTER TABLE `files`
+  ADD PRIMARY KEY (`id`,`email`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -63,6 +87,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+COMMIT;
+
+--
+-- AUTO_INCREMENT for table `files`
+--
+ALTER TABLE `files`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 

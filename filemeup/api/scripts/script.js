@@ -1,4 +1,28 @@
 $(document).ready(function () {
+    $(".ml").each(function(){
+      $(this).html($(this).text().replace(/([^\x00-\x80]|\w)/g, "<span class='letter'>$&</span>"));
+    });
+    
+    anime.timeline({loop: true})
+      .add({
+        targets: '.ml .letter',
+        scale: [4,1],
+        opacity: [0,1],
+        translateZ: 0,
+        easing: "easeOutExpo",
+        duration: 950,
+        delay: function(el, i) {
+          return 70*i;
+        }
+      }).add({
+        targets: '.ml',
+        opacity: 0,
+        duration: 1000,
+        easing: "easeOutExpo",
+        delay: 1000
+      });
+});
+$(document).ready(function () {
     $(document).on('click', '#sign_up', function () {
 
         var html = `
@@ -91,19 +115,29 @@ $(document).ready(function () {
         var jwt = getCookie('jwt');
         $.post("api/validate_token.php", JSON.stringify({ jwt: jwt })).done(function (result) {
             var html = `
-            <h2>Качи файл</h2>
             <form id='files_form'>
+            <hr/>
+            <div id="upload_files">
+                <h2>Качи файл</h2>
                 <div class="form-group">
                     <label for="filename">Име</label>
                     <input type="text" placeholder="Име" class="form-control" name="filename" id="filename" required />
                 </div>
- 
                 <div class="form-group">
-                    <label for="email">Тип</label>
-                    <input type="text" placeholder="Тип" class="form-control" name="filetype" id="filetype" required />
+                    <label for="filename">Достъп до всички</label>
+                    <input style="margin-top: -24px; margin-left: -400px;" type="checkbox" class="form-control" name="access" id="access" name="checked" checked />
                 </div>
  
                 <button type='submit' class='btn btn-primary'>Качи</button>
+            </div>
+            <hr/>
+            <div id="my_files">
+            <h2>Моите файлове</h2>
+            </div>
+            <hr/>
+            <div id="download_files">
+            <h2>Достъпни файлове</h2>
+            </div>
             </form>
             `;
 
@@ -123,7 +157,7 @@ $(document).ready(function () {
         var form_data = JSON.stringify(files_form.serializeObject());
 
         $.ajax({
-            url: "api/add_file.php",
+            url: "api/upload_file.php",
             type: "POST",
             contentType: 'application/json',
             data: form_data,
