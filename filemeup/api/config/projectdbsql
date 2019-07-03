@@ -44,7 +44,8 @@ CREATE TABLE `users` (
 CREATE TABLE `files` (
   `id` int(11) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `file_name` varchar(2056) NOT NULL
+  `file_name` varchar(2056) NOT NULL,
+  `access` boolean NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -94,8 +95,7 @@ COMMIT;
 -- AUTO_INCREMENT for table `files`
 --
 ALTER TABLE `files`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-COMMIT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

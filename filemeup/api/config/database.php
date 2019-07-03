@@ -1,16 +1,18 @@
 <?php
 class Database
 {
-    private $host = "localhost";
-    private $db_name = "filemeup";
-    private $username = "root";
-    private $password = "";
+    //private $host = "localhost";
+    private $host = 'ec2-54-236-126-133.compute-1.amazonaws.com';
+    private $db_name = 'filemeup';
+    //private $username = "root";
+    //private $password = "";
+    private $username = 'admin';
+    private $password = 'admin';
     public $conn;
 
     public function getConnection()
     {
         $this->conn = null;
-
         try {
             $this->conn = new PDO(
                 "mysql:host=" . $this->host,
@@ -54,13 +56,13 @@ class Database
                     } else {
                         echo "Cannot create users table";
                     }
-
                     $sqlExistsFiles = "DROP TABLE IF EXISTS `files`";
                     $this->conn->query($sqlExistsFiles);
                     $sqlCreateFiles = "CREATE TABLE `files` (
                         `id` int(11) NOT NULL,
                         `email` varchar(255) NOT NULL,
-                        `file_name` varchar(2056) NOT NULL
+                        `file_name` varchar(2056) NOT NULL,
+                        `access` boolean NOT NULL DEFAULT 1
                       ) ENGINE=InnoDB DEFAULT CHARSET=utf8";
                     $res = $this->conn->query($sqlCreateFiles);
                     if ($res) {
@@ -72,8 +74,7 @@ class Database
                         ADD PRIMARY KEY (`id`,`email`)";
                         $this->conn->query($sqlAlterFiles);
                         $sqlModify = "ALTER TABLE `files`
-                        MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-                        COMMIT";
+                        MODIFY `id` int(11) NOT NULL AUTO_INCREMENT";
                         $this->conn->query($sqlModify);
                     } else {
                         echo "Cannot create users table";
@@ -88,7 +89,6 @@ class Database
         } catch (PDOException $exception) {
             echo "Connection error: " . $exception->getMessage();
         }
-
         return $this->conn;
     }
 }

@@ -1,26 +1,26 @@
 $(document).ready(function () {
-    $(".ml").each(function(){
-      $(this).html($(this).text().replace(/([^\x00-\x80]|\w)/g, "<span class='letter'>$&</span>"));
+    $(".ml").each(function () {
+        $(this).html($(this).text().replace(/([^\x00-\x80]|\w)/g, "<span class='letter'>$&</span>"));
     });
-    
-    anime.timeline({loop: true})
-      .add({
-        targets: '.ml .letter',
-        scale: [4,1],
-        opacity: [0,1],
-        translateZ: 0,
-        easing: "easeOutExpo",
-        duration: 950,
-        delay: function(el, i) {
-          return 70*i;
-        }
-      }).add({
-        targets: '.ml',
-        opacity: 0,
-        duration: 1000,
-        easing: "easeOutExpo",
-        delay: 1000
-      });
+
+    anime.timeline({ loop: true })
+        .add({
+            targets: '.ml .letter',
+            scale: [4, 1],
+            opacity: [0, 1],
+            translateZ: 0,
+            easing: "easeOutExpo",
+            duration: 950,
+            delay: function (el, i) {
+                return 70 * i;
+            }
+        }).add({
+            targets: '.ml',
+            opacity: 0,
+            duration: 1000,
+            easing: "easeOutExpo",
+            delay: 1000
+        });
 });
 $(document).ready(function () {
     $(document).on('click', '#sign_up', function () {
@@ -71,6 +71,7 @@ $(document).ready(function () {
                 sign_up_form.find('input').val('');
             },
             error: function (xhr, resp, text) {
+                console.log(resp, text, xhr);
                 $('#response').html("<div class='alert alert-danger'>Грешка при регистрация.</div>");
             }
         });
@@ -99,6 +100,7 @@ $(document).ready(function () {
 
             },
             error: function (xhr, resp, text) {
+                console.log(resp, text, xhr);
                 $('#response').html("<div class='alert alert-danger'>Грешка при вход. Невалидни данни.</div>");
                 login_form.find('input').val('');
             }
@@ -115,28 +117,25 @@ $(document).ready(function () {
         var jwt = getCookie('jwt');
         $.post("api/validate_token.php", JSON.stringify({ jwt: jwt })).done(function (result) {
             var html = `
-            <form id='files_form'>
+            <form enctype="multipart/form-data" id='files_form'>
             <hr/>
             <div id="upload_files">
                 <h2>Качи файл</h2>
                 <div class="form-group">
-                    <label for="filename">Име</label>
-                    <input type="text" placeholder="Име" class="form-control" name="filename" id="filename" required />
+                    <label for="email">Email</label>
+                    <input type="email" placeholder="Email" class="form-control" name="email" id="email" required 
+                    value="` + result.data.email + `" readonly/>
                 </div>
                 <div class="form-group">
-                    <label for="filename">Достъп до всички</label>
-                    <input style="margin-top: -24px; margin-left: -400px;" type="checkbox" class="form-control" name="access" id="access" name="checked" checked />
+                    <label for="file_name">Избери файл</label>
+                    <input type="file" placeholder="Име" class="inputfile" name="file_name" id="file_name" required />
+                </div>
+                <div class="form-group">
+                    <label for="access">Достъп до всички</label>
+                    <input style="margin-top: -24px; margin-left: -390px;" type="checkbox" class="form-control" name="access" id="access" checked="true" />
                 </div>
  
-                <button type='submit' class='btn btn-primary'>Качи</button>
-            </div>
-            <hr/>
-            <div id="my_files">
-            <h2>Моите файлове</h2>
-            </div>
-            <hr/>
-            <div id="download_files">
-            <h2>Достъпни файлове</h2>
+                <button type='submit' name='submit' class='btn btn-primary'>Качи</button>
             </div>
             </form>
             `;
@@ -151,22 +150,134 @@ $(document).ready(function () {
             });
     });
 
-    $(document).on('submit', '#files_form', function () {
+    $(document).on('click', "#my_files", function () {
 
-        var files_form = $(this);
-        var form_data = JSON.stringify(files_form.serializeObject());
+        var html = `
+            <form id='my_files_form'>
+            <hr/>
+            <div id="my_files">
+            <h2>Моите файлове</h2>
+            <table id="myfiles">
+                <thead>
+                <tr>
+	                <th>Автор
+	                <th>Файл
+                </tr>
+                <thead>
+                <tbody id="dataMy"></tbody>
+            </table>
+            </div>
+            </form>
+            `;
+
+        var ajax = new XMLHttpRequest();
+        ajax.open("GET", "api/show_my_files.php", true);
+        ajax.send();
+
+        ajax.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+                var data = JSON.parse(this.responseText);
+                console.log(data);
+
+                var body = "";
+                for (var i = 0; i < data['files'].length; i++) {
+                    var email = data['files'][i].email;
+                    var file_name = data['files'][i].file_name;
+                    body += "<tr>";
+                    body += "<td>" + email + "</td>";
+                    body += "<td>" + file_name + "</td>";
+                    body += "</tr>";
+                }
+                document.getElementById("dataMy").innerHTML += body;
+            }
+        };
+
+        clearResponse();
+        $('#content').html(html);
+    });
+
+    $(document).on('click', "#all_files", function () {
+        var html = `
+            <form id='all_files_form'>
+            <hr/>
+            <div id="all_files">
+            <h2>Достъпни файлове</h2>
+            <table id="myfiles">
+            <tr>
+                <th>Автор
+                <th>Файл
+            </tr>
+            <tbody id="dataAll"></tbody>
+            </table>
+            </div>
+            </form>
+            `;
+        var ajax = new XMLHttpRequest();
+        ajax.open("GET", "api/show_all_files.php", true);
+        ajax.send();
+
+        ajax.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var data = JSON.parse(this.responseText);
+                console.log(data);
+
+                var body = "";
+                for (var i = 0; i < data['records'].length; i++) {
+                    var email = data['records'][i].email;
+                    var file_name = data['records'][i].file_name;
+                    body += "<tr>";
+                    body += "<td>" + email + "</td>";
+                    body += "<td>" + file_name + "</td>";
+                    body += "</tr>";
+                }
+                document.getElementById("dataAll").innerHTML += body;
+            }
+        };
+
+        clearResponse();
+        $('#content').html(html);
+    });
+
+    $(document).on('submit', '#files_form', function () {
+        var file_form = $(this);
+        var jwt = getCookie('jwt');
+        var files_form = file_form.serializeObject();
+        files_form.jwt = jwt;
+        var form_data = JSON.stringify(files_form);
+        console.log(form_data);
 
         $.ajax({
             url: "api/upload_file.php",
             type: "POST",
-            contentType: 'application/json',
+            //contentType: 'application/json',
             data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
             success: function (result) {
                 $('#response').html("<div class='alert alert-success'>Успешнo качване на файл.</div>");
-                files_form.find('input').val('');
+                file_form.find('.inputfile').val('');
+                setCookie("jwt", result.jwt, 1);
             },
             error: function (xhr, resp, text) {
                 $('#response').html("<div class='alert alert-danger'>Грешка при качване на файл.</div>");
+                console.log(xhr, resp, text);
+                file_form.find('.inputfile').val('');
+            }
+        });
+
+        $("#file_name").change(function () {
+            var file = this.files[0];
+            var uploadedfile = file.type;
+            var match = ["image/jpeg", "image/png", "image/jpg", "image/gif", "application/pdf", "text/html", "text/plain",
+                "application/vnd.ms-powerpoint", "application/vnd.ms-excel", "application/msword"];
+            if (!((uploadedfile == match[0]) || (uploadedfile == match[1]) || (uploadedfile == match[2]) || (uploadedfile == match[3])
+                || (uploadedfile == match[4]) || (uploadedfile == match[5]) || (uploadedfile == match[6])
+                || (uploadedfile == match[7]) || (uploadedfile == match[8]) || (uploadedfile == match[9]))) {
+                alert('Моля изберете валиден формат на файла.');
+                $("#file_name").val('');
+                return false;
             }
         });
 
