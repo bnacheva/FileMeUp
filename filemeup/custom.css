@@ -35,16 +35,16 @@ form label {
 	background:linear-gradient(to bottom, #599bb3 5%, #408c99 100%);
 	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#599bb3', endColorstr='#408c99',GradientType=0);
 	background-color:#599bb3;
-	-moz-border-radius:8px;
-	-webkit-border-radius:8px;
-	border-radius:8px;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
 	display:inline-block;
 	cursor:pointer;
 	color:#ffffff;
 	font-family:Arial;
-	font-size:15px;
+	font-size:10px;
 	font-weight:bold;
-	padding:8px 27px;
+	padding:5px 15px;
 	text-decoration:none;
 	text-shadow:0px 1px 0px #3d768a;
 }

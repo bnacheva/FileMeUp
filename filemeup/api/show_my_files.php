@@ -5,13 +5,16 @@ header("Access-Control-Allow-Methods: GET");
 
 include_once 'config/database.php';
 include_once 'objects/file.php';
+include_once 'get_my_files.php';
+
+$all_data = $data;
     
 $database = new Database();
 $db = $database->getConnection();
     
 $file = new File($db);
     
-$stmt = $file->show_my_files();
+$stmt = $file->show_my_files($all_data['email']);
 $num = $stmt->rowCount();
 
 if ($num > 0) {

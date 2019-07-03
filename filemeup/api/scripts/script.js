@@ -1,3 +1,4 @@
+var globalData;
 $(document).ready(function () {
     $(".ml").each(function () {
         $(this).html($(this).text().replace(/([^\x00-\x80]|\w)/g, "<span class='letter'>$&</span>"));
@@ -88,6 +89,7 @@ $(document).ready(function () {
         var login_form = $(this);
         var form_data = JSON.stringify(login_form.serializeObject());
 
+        console.log(form_data);
         $.ajax({
             url: "api/login.php",
             type: "POST",
@@ -132,11 +134,10 @@ $(document).ready(function () {
                 </div>
                 <div class="form-group">
                     <label for="access">Достъп до всички</label>
-                    <input style="margin-top: -24px; margin-left: -390px;" type="checkbox" class="form-control" name="access" id="access" checked="true" />
+                    <input style="margin-top: -24px; margin-left: -390px;" type="checkbox" class="form-control" name="access" id="access" checked />
                 </div>
- 
-                <button type='submit' name='submit' class='btn btn-primary'>Качи</button>
             </div>
+            <hr/>
             </form>
             `;
 
@@ -152,7 +153,12 @@ $(document).ready(function () {
 
     $(document).on('click', "#my_files", function () {
 
-        var html = `
+        if (globalData == null) {
+            showLoginPage();
+            $('#response').html("<div class='alert alert-danger'>Моля, влезте в системата.</div>");
+        }
+        else {
+            var html = `
             <form id='my_files_form'>
             <hr/>
             <div id="my_files">
@@ -161,7 +167,9 @@ $(document).ready(function () {
                 <thead>
                 <tr>
 	                <th>Автор
-	                <th>Файл
+                    <th>Файл
+                    <th style="width: 50px;">
+                    <th style="width: 50px;">
                 </tr>
                 <thead>
                 <tbody id="dataMy"></tbody>
@@ -170,35 +178,58 @@ $(document).ready(function () {
             </form>
             `;
 
-        var ajax = new XMLHttpRequest();
-        ajax.open("GET", "api/show_my_files.php", true);
-        ajax.send();
-
-        ajax.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                console.log(this.responseText);
-                var data = JSON.parse(this.responseText);
-                console.log(data);
-
-                var body = "";
-                for (var i = 0; i < data['files'].length; i++) {
-                    var email = data['files'][i].email;
-                    var file_name = data['files'][i].file_name;
-                    body += "<tr>";
-                    body += "<td>" + email + "</td>";
-                    body += "<td>" + file_name + "</td>";
-                    body += "</tr>";
+            console.log(globalData);
+            $.ajax({
+                type: 'POST',
+                url: 'api/get_my_files.php',
+                dataType: "json",
+                data: globalData['data'],
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function (xhr, resp, text) {
+                    console.log(globalData['data']);
+                    console.log(xhr, resp, text);
                 }
-                document.getElementById("dataMy").innerHTML += body;
-            }
-        };
+            });
 
-        clearResponse();
-        $('#content').html(html);
+            var ajax = new XMLHttpRequest();
+            ajax.open("GET", "api/show_my_files.php", true);
+            ajax.send();
+
+            ajax.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.responseText);
+                    var data = JSON.parse(this.responseText);
+                    console.log(data);
+
+                    var body = "";
+                    for (var i = 0; i < data['files'].length; i++) {
+                        var email = data['files'][i].email;
+                        var file_name = data['files'][i].file_name;
+                        body += "<tr>";
+                        body += "<td>" + email + "</td>";
+                        body += "<td>" + file_name + "</td>";
+                        body += "<td>" + "<button type='button' class='btn btn-secondary' style='font-size: 12px; background-color: #cce7ff; color: black'>Покажи</button>" + "</td>"
+                        body += "<td>" + "<button type='button' class='btn btn-secondary' style='font-size: 12px; background-color: #cce7ff; color: black'>Изтрий</button>" + "</td>"
+                        body += "</tr>";
+                    }
+                    document.getElementById("dataMy").innerHTML += body;
+                }
+            };
+
+            clearResponse();
+            $('#content').html(html);
+        };
     });
 
     $(document).on('click', "#all_files", function () {
-        var html = `
+        if (globalData == null) {
+            showLoginPage();
+            $('#response').html("<div class='alert alert-danger'>Моля, влезте в системата.</div>");
+        }
+        else {
+            var html = `
             <form id='all_files_form'>
             <hr/>
             <div id="all_files">
@@ -207,39 +238,45 @@ $(document).ready(function () {
             <tr>
                 <th>Автор
                 <th>Файл
+                <th style="width: 50px;">
+                <th style="width: 50px;">
             </tr>
             <tbody id="dataAll"></tbody>
             </table>
             </div>
             </form>
             `;
-        var ajax = new XMLHttpRequest();
-        ajax.open("GET", "api/show_all_files.php", true);
-        ajax.send();
+            var ajax = new XMLHttpRequest();
+            ajax.open("GET", "api/show_all_files.php", true);
+            ajax.send();
 
-        ajax.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                var data = JSON.parse(this.responseText);
-                console.log(data);
+            ajax.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var data = JSON.parse(this.responseText);
+                    console.log(data);
 
-                var body = "";
-                for (var i = 0; i < data['records'].length; i++) {
-                    var email = data['records'][i].email;
-                    var file_name = data['records'][i].file_name;
-                    body += "<tr>";
-                    body += "<td>" + email + "</td>";
-                    body += "<td>" + file_name + "</td>";
-                    body += "</tr>";
+                    var body = "";
+                    for (var i = 0; i < data['records'].length; i++) {
+                        var email = data['records'][i].email;
+                        var file_name = data['records'][i].file_name;
+                        body += "<tr>";
+                        body += "<td>" + email + "</td>";
+                        body += "<td>" + file_name + "</td>";
+                        body += "<td>" + "<button type='button' onclick='location.href='http://google.com'' class='btn btn-secondary' style='font-size: 12px; background-color: #cce7ff; color: black'>Покажи</button>" + "</td>"
+                        body += "<td>" + "<button type='button' class='btn btn-secondary' style='font-size: 12px; background-color: #cce7ff; color: black'>Изтрий</button>" + "</td>"
+                        body += "</tr>";
+                    }
+                    document.getElementById("dataAll").innerHTML += body;
                 }
-                document.getElementById("dataAll").innerHTML += body;
-            }
-        };
+            };
 
-        clearResponse();
-        $('#content').html(html);
+            clearResponse();
+            $('#content').html(html);
+        }
     });
 
-    $(document).on('submit', '#files_form', function () {
+    /*$(document).on('submit', '#files_form', function () {
+        console.log(input.files);
         var file_form = $(this);
         var jwt = getCookie('jwt');
         var files_form = file_form.serializeObject();
@@ -282,7 +319,7 @@ $(document).ready(function () {
         });
 
         return false;
-    });
+    });*/
 
     $(document).on('click', '#update_account', function () {
         showUpdateAccountForm();
@@ -377,6 +414,7 @@ $(document).ready(function () {
         var jwt = getCookie('jwt');
         $.post("api/validate_token.php", JSON.stringify({ jwt: jwt })).done(function (result) {
 
+            globalData = result;
             var html = `
 <div class="card">
 <div class="card-header">Добре дошли!</div>
@@ -477,4 +515,39 @@ $(document).ready(function () {
         });
         return o;
     };
+});
+
+$(document).ready(function () {
+    $(document).on('change', '#file_name', function () {
+        var name = document.getElementById("file_name").files[0].name;
+        var form_data = new FormData();
+        var ext = name.split('.').pop().toLowerCase();
+        if (jQuery.inArray(ext, ['gif', 'png', 'jpg', 'jpeg', 'pdf', 'html', 'txt', 'doc', 'ppt', 'xls']) == -1) {
+            alert('Моля изберете валиден формат на файла.');
+            $("#file_name").val('');
+        }
+        var oFReader = new FileReader();
+        oFReader.readAsDataURL(document.getElementById("file_name").files[0]);
+
+        form_data.append("file_name", document.getElementById('file_name').files[0]);
+        form_data.append("email", document.getElementById('email').value);
+        form_data.append("access", document.getElementById('access').value);
+        console.log(document.getElementById('access').value);
+        $.ajax({
+            url: "api/upload_file.php",
+            method: "POST",
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function (result) {
+                $('#response').html("<div class='alert alert-success'>Успешнo качване на файл.</div>");
+                $("#file_name").val('');
+            },
+            error: function (xhr, resp, text) {
+                console.log(xhr, resp, text);
+                $("#file_name").val('');
+            }
+        });
+    });
 });
