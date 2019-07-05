@@ -222,9 +222,15 @@ $(document).ready(function () {
                     var body = "";
                     for (var i = 0; i < data['records'].length; i++) {
                         var file_name = data['records'][i].file_name;
-                        body += "<div class='column'>";
-                        body += "<img src='api/uploads/" + file_name + "'" + " style='width: 100%'>";
-                        body += "</div>";
+                        if (file_name.includes(".pdf")) {
+                            body += "<embed src='api/uploads/" + file_name + "'" + " width='800px' height='500px'/>";
+                            console.log(body);
+                        }
+                        else {
+                            body += "<div class='column'>";
+                            body += "<img src='api/uploads/" + file_name + "'" + " style='width: 100%'>";
+                            body += "</div>";
+                        }
                     }
                     document.getElementById("showAll").innerHTML += body;
                 }
@@ -354,52 +360,6 @@ $(document).ready(function () {
             $('#content').html(html);
         }
     });
-
-    /*$(document).on('submit', '#files_form', function () {
-        console.log(input.files);
-        var file_form = $(this);
-        var jwt = getCookie('jwt');
-        var files_form = file_form.serializeObject();
-        files_form.jwt = jwt;
-        var form_data = JSON.stringify(files_form);
-        console.log(form_data);
-
-        $.ajax({
-            url: "api/upload_file.php",
-            type: "POST",
-            //contentType: 'application/json',
-            data: form_data,
-            contentType: false,
-            cache: false,
-            processData: false,
-            success: function (result) {
-                $('#response').html("<div class='alert alert-success'>Успешнo качване на файл.</div>");
-                file_form.find('.inputfile').val('');
-                setCookie("jwt", result.jwt, 1);
-            },
-            error: function (xhr, resp, text) {
-                $('#response').html("<div class='alert alert-danger'>Грешка при качване на файл.</div>");
-                console.log(xhr, resp, text);
-                file_form.find('.inputfile').val('');
-            }
-        });
-
-        $("#file_name").change(function () {
-            var file = this.files[0];
-            var uploadedfile = file.type;
-            var match = ["image/jpeg", "image/png", "image/jpg", "image/gif", "application/pdf", "text/html", "text/plain",
-                "application/vnd.ms-powerpoint", "application/vnd.ms-excel", "application/msword"];
-            if (!((uploadedfile == match[0]) || (uploadedfile == match[1]) || (uploadedfile == match[2]) || (uploadedfile == match[3])
-                || (uploadedfile == match[4]) || (uploadedfile == match[5]) || (uploadedfile == match[6])
-                || (uploadedfile == match[7]) || (uploadedfile == match[8]) || (uploadedfile == match[9]))) {
-                alert('Моля изберете валиден формат на файла.');
-                $("#file_name").val('');
-                return false;
-            }
-        });
-
-        return false;
-    });*/
 
     $(document).on('click', '#update_account', function () {
         showUpdateAccountForm();
