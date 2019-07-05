@@ -34,18 +34,18 @@ if (!empty($_FILES['file_name']['name'])) {
 
     $file->email = $_POST['email'];
     $file->file_name = $uploadedFile;
-    if (!isset($_POST['access']))
+    if ($_POST['access'] == "Off")
         $file->access = 0;
-    else if ($_POST['access'] == "on")
+    else if ($_POST['access'] == "On")
         $file->access = 1;
-        if (
-            !empty($file->email) &&
-            !empty($file->file_name) &&
-            $file->add()
-        ) {        
-            http_response_code(200);
-            echo json_encode(array("message" => "File was uploaded."));
-        }
+    if (
+        !empty($file->email) &&
+        !empty($file->file_name) &&
+        $file->add()
+    ) {        
+        http_response_code(200);
+        echo json_encode(array("message" => "File was uploaded."));
+    }
 }
 
 else {

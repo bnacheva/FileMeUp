@@ -1,4 +1,5 @@
 var globalData;
+var globalCheckbox;
 $(document).ready(function () {
     $(".ml").each(function () {
         $(this).html($(this).text().replace(/([^\x00-\x80]|\w)/g, "<span class='letter'>$&</span>"));
@@ -134,7 +135,7 @@ $(document).ready(function () {
                 </div>
                 <div class="form-group">
                     <label for="access">Достъп до всички</label>
-                    <input style="margin-top: -24px; margin-left: -390px;" type="checkbox" class="form-control" name="access" id="access" checked />
+                    <input style="margin-top: -24px; margin-left: -390px;" type="checkbox" class="form-control" name="access" id="access" />
                 </div>
             </div>
             <hr/>
@@ -177,9 +178,15 @@ $(document).ready(function () {
                     var body = "";
                     for (var i = 0; i < data['files'].length; i++) {
                         var file_name = data['files'][i].file_name;
-                        body += "<div class='column'>";
-                        body += "<img src='api/uploads/" + file_name + "'" + " style='width: 100%'>";
-                        body += "</div>";
+                        if (file_name.includes(".pdf")) {
+                            body += "<embed src='api/uploads/" + file_name + "'" + " width='800px' height='500px'/>";
+                            console.log(body);
+                        }
+                        else {
+                            body += "<div class='column'>";
+                            body += "<img src='api/uploads/" + file_name + "'" + " style='width: 100%'>";
+                            body += "</div>";
+                        }
                     }
                     document.getElementById("showMy").innerHTML += body;
                 }
@@ -590,6 +597,15 @@ $(document).ready(function () {
     };
 });
 
+$(document).on('click', '#access', function() {
+    if(this.checked) {
+      globalCheckbox = 1;
+    }
+    else {
+        globalCheckbox = 0;
+    }
+});
+
 $(document).ready(function () {
     $(document).on('change', '#file_name', function () {
         var name = document.getElementById("file_name").files[0].name;
@@ -604,8 +620,12 @@ $(document).ready(function () {
 
         form_data.append("file_name", document.getElementById('file_name').files[0]);
         form_data.append("email", document.getElementById('email').value);
-        form_data.append("access", document.getElementById('access').value);
-        console.log(document.getElementById('access').value);
+        if (globalCheckbox === undefined)
+            globalCheckbox = "Off";
+        else 
+            globalCheckbox = "On";
+        console.log(globalCheckbox);
+        form_data.append("access", globalCheckbox);
         $.ajax({
             url: "api/upload_file.php",
             method: "POST",
