@@ -66,10 +66,6 @@ class Database
                       ) ENGINE=InnoDB DEFAULT CHARSET=utf8";
                     $res = $this->conn->query($sqlCreateFiles);
                     if ($res) {
-                        $sqlInsertIntoFiles = "INSERT INTO `files` 
-                        (`id`, `email`, `file_name`) VALUES
-                        (1, 'bori97@abv.bg', 'file.txt')";
-                        $this->conn->query($sqlInsertIntoFiles);
                         $sqlAlterFiles = "ALTER TABLE `files`
                         ADD PRIMARY KEY (`id`,`email`)";
                         $this->conn->query($sqlAlterFiles);

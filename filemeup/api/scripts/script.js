@@ -151,6 +151,83 @@ $(document).ready(function () {
             });
     });
 
+    $(document).on('click', "#viewmy", function () {
+        if (globalData == null) {
+            showLoginPage();
+            $('#response').html("<div class='alert alert-danger'>Моля, влезте в системата.</div>");
+        }
+        else {
+
+            var html = `
+            <hr/>
+            <div class="row" id='showMy'>
+            </div>
+            `;
+
+            var ajax = new XMLHttpRequest();
+            ajax.open("GET", "api/show_my_files.php", true);
+            ajax.send();
+
+            ajax.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.responseText);
+                    var data = JSON.parse(this.responseText);
+                    console.log(data);
+
+                    var body = "";
+                    for (var i = 0; i < data['files'].length; i++) {
+                        var file_name = data['files'][i].file_name;
+                        body += "<div class='column'>";
+                        body += "<img src='api/uploads/" + file_name + "'" + " style='width: 100%'>";
+                        body += "</div>";
+                    }
+                    document.getElementById("showMy").innerHTML += body;
+                }
+            };
+
+            clearResponse();
+            $('#content').html(html);
+        };
+    });
+
+    $(document).on('click', "#viewall", function () {
+        if (globalData == null) {
+            showLoginPage();
+            $('#response').html("<div class='alert alert-danger'>Моля, влезте в системата.</div>");
+        }
+        else {
+            var html = `
+            <hr/>
+            <div class="row" id='showAll'>
+            </div>
+            `;
+
+            var ajax = new XMLHttpRequest();
+            ajax.open("GET", "api/show_all_files.php", true);
+            ajax.send();
+
+            ajax.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.responseText);
+                    var data = JSON.parse(this.responseText);
+                    console.log(data);
+
+                    var body = "";
+                    for (var i = 0; i < data['records'].length; i++) {
+                        var file_name = data['records'][i].file_name;
+                        body += "<div class='column'>";
+                        body += "<img src='api/uploads/" + file_name + "'" + " style='width: 100%'>";
+                        body += "</div>";
+                    }
+                    document.getElementById("showAll").innerHTML += body;
+                }
+            };
+
+            clearResponse();
+            $('#content').html(html);
+        };
+    });
+
     $(document).on('click', "#my_files", function () {
 
         if (globalData == null) {
@@ -168,14 +245,14 @@ $(document).ready(function () {
                 <tr>
 	                <th>Автор
                     <th>Файл
-                    <th style="width: 50px;">
-                    <th style="width: 50px;">
                 </tr>
                 <thead>
                 <tbody id="dataMy"></tbody>
             </table>
+            <br/>
             </div>
             </form>
+            <input type='button' class='btn btn-primary' id='viewmy' value='Виж файловете'/>
             `;
 
             console.log(globalData);
@@ -210,8 +287,6 @@ $(document).ready(function () {
                         body += "<tr>";
                         body += "<td>" + email + "</td>";
                         body += "<td>" + file_name + "</td>";
-                        body += "<td>" + "<button type='button' class='btn btn-secondary' style='font-size: 12px; background-color: #cce7ff; color: black'>Покажи</button>" + "</td>"
-                        body += "<td>" + "<button type='button' class='btn btn-secondary' style='font-size: 12px; background-color: #cce7ff; color: black'>Изтрий</button>" + "</td>"
                         body += "</tr>";
                     }
                     document.getElementById("dataMy").innerHTML += body;
@@ -238,13 +313,13 @@ $(document).ready(function () {
             <tr>
                 <th>Автор
                 <th>Файл
-                <th style="width: 50px;">
-                <th style="width: 50px;">
             </tr>
             <tbody id="dataAll"></tbody>
             </table>
+            <br/>
             </div>
             </form>
+            <input type='button' class='btn btn-primary' id='viewall' value='Виж файловете'/>
             `;
             var ajax = new XMLHttpRequest();
             ajax.open("GET", "api/show_all_files.php", true);
@@ -262,8 +337,6 @@ $(document).ready(function () {
                         body += "<tr>";
                         body += "<td>" + email + "</td>";
                         body += "<td>" + file_name + "</td>";
-                        body += "<td>" + "<button type='button' onclick='location.href='http://google.com'' class='btn btn-secondary' style='font-size: 12px; background-color: #cce7ff; color: black'>Покажи</button>" + "</td>"
-                        body += "<td>" + "<button type='button' class='btn btn-secondary' style='font-size: 12px; background-color: #cce7ff; color: black'>Изтрий</button>" + "</td>"
                         body += "</tr>";
                     }
                     document.getElementById("dataAll").innerHTML += body;

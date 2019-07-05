@@ -56,13 +56,6 @@ INSERT INTO `users` (`id`, `email`, `firstname`, `lastname`, `password`, `role`)
 (1, 'bori97@abv.bg', 'Боряна', 'Начева', '8d8d1603ae6d58faaaff0185dfada8b2', 'Admin');
 
 --
--- Dumping data for table `files`
---
-
-INSERT INTO `files` (`id`, `email`, `file_name`) VALUES
-(1, 'bori97@abv.bg', 'file.txt');
-
---
 -- Indexes for dumped tables
 --
 
