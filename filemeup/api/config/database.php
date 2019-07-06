@@ -1,13 +1,10 @@
 <?php
 class Database
 {
-    //private $host = "localhost";
-    private $host = 'ec2-54-236-126-133.compute-1.amazonaws.com';
+    private $host = "localhost";
     private $db_name = 'filemeup';
-    //private $username = "root";
-    //private $password = "";
-    private $username = 'admin';
-    private $password = 'admin';
+    private $username = "root";
+    private $password = "";
     public $conn;
 
     public function getConnection()

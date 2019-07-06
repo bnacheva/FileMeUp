@@ -53,7 +53,7 @@ CREATE TABLE `files` (
 --
 
 INSERT INTO `users` (`id`, `email`, `firstname`, `lastname`, `password`, `role`) VALUES
-(1, 'bori97@abv.bg', 'Боряна', 'Начева', '8d8d1603ae6d58faaaff0185dfada8b2', 'Admin');
+(1, 'bori97@abv.bg', 'Боряна', 'Начева', '$2y$10\$tSuPGdnMLl4/gj9zOY7ISO48PzWlc1kNWFYBKspRUGAxr1P/y88vS', 'Admin');
 
 --
 -- Indexes for dumped tables
